@@ -1,0 +1,37 @@
+QMainWindow {
+    background: #dddddd;
+}
+
+QFrame {
+    background: white;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    border-bottom: 4px solid #ccc;
+}
+
+QLabel, QTextEdit, QLineEdit {
+    border: 0;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 24px;
+}
+
+QTextEdit#frame_info_label {
+    border: 0;
+    font-size: 18px;
+    color: #ccc;
+}
+
+QFrame#puzzle_board {
+    border-radius: 0;
+    border: 1px solid #444;
+}
+
+QFrame.puzzle_grid {
+    border-radius: 0;
+    border: 1px solid #eee;
+}
+
+QLineEdit.puzzle_input {
+    border: 1px solid #eee;
+    font-size: 22px;
+}
