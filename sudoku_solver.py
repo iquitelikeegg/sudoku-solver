@@ -1,12 +1,13 @@
 import sys
 import math
 from PyQt4 import QtGui, QtCore
+import sudoku_logic
 
-class SudokuSolver(QtGui.QMainWindow):
+class MainWindow(QtGui.QMainWindow):
 
     def __init__(self):
 
-        super(SudokuSolver, self).__init__()
+        super(MainWindow, self).__init__()
 
         self.initUI()
 
@@ -23,10 +24,11 @@ class Wrapper(QtGui.QFrame):
 
     messages = {
         'title' : 'Sudoku Solver',
-        'infoLabel' : 'Enter your sudoku numbers into the boxes below and click solve!'
+        'infoLabel' : 'Enter your sudoku numbers into the boxes below and click solve!',
+        'submitButtonLabel' : 'Solve!'
     }
     width  = 600
-    height = 650
+    height = 670
 
     def __init__(self, parent):
         super(Wrapper, self).__init__(parent)
@@ -38,7 +40,19 @@ class Wrapper(QtGui.QFrame):
         print "Begin"
 
         self.board = Board(self)
-        self.createLabels();
+        self.createLabels()
+
+        self.submit = QtGui.QPushButton(self.messages['submitButtonLabel'], self)
+        self.submit.setObjectName('submit_button')
+        self.submit.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.submit.resize(200, 50)
+        self.submit.move(200, 600)
+
+        QtCore.QObject.connect(
+            self.submit,
+            QtCore.SIGNAL('clicked()'),
+            self.board.calculate
+        )
 
         self.resize(self.width, self.height)
         self.move(100, 50)
@@ -56,7 +70,7 @@ class Wrapper(QtGui.QFrame):
         self.title.move(20, 20)
 
         #FIXME line height
-        blockFormat = QtGui.QTextBlockFormat();
+        blockFormat = QtGui.QTextBlockFormat()
         blockFormat.setLineHeight(30, QtGui.QTextBlockFormat.LineDistanceHeight)
 
         self.infoLabel = QtGui.QTextEdit(self.messages['infoLabel'], self)
@@ -90,25 +104,51 @@ class Board(QtGui.QFrame):
     def createPuzzleGrid(self):
 
         for i in range(0, 9):
-            grid = QtGui.QFrame(self)
-            grid.setObjectName('puzzle_grid_%d' % i)
-            grid.setProperty('class', 'puzzle_grid')
-            grid.resize((self.width / 3), (self.height / 3))
-            grid.move(((i % 3) * self.width / 3) + 1, (math.floor(i / 3) * self.height / 3) + 1)
+            block = QtGui.QFrame(self)
+            block.setObjectName('puzzle_grid_%d' % i)
+            block.setProperty('class', 'puzzle_grid')
+            block.resize((self.width / 3), (self.height / 3))
+            block.move(
+                ((i % 3) * self.width / 3) + 1,
+                (math.floor(i / 3) * self.height / 3) + 1
+            )
+
+            self.puzzleBlocks.append(block)
 
             for j in range(0, 9):
-                numberInput = QtGui.QLineEdit(grid)
+                numberInput = QtGui.QLineEdit(block)
                 numberInput.setObjectName('puzzle_input_%d%d' % (i, j))
                 numberInput.setProperty('class', 'puzzle_input')
                 numberInput.setMaxLength(1)
                 numberInput.setAlignment(QtCore.Qt.AlignHCenter)
                 numberInput.resize(((self.width - 3) / 9), ((self.height - 3) / 9))
-                numberInput.move((j % 3) * self.width / 9 + 1, math.floor(j / 3) * self.height / 9 + 1)
+                numberInput.move(
+                    (j % 3) * self.width / 9 + 1,
+                    math.floor(j / 3) * self.height / 9 + 1
+                )
+
+    def calculate(self):
+        calcValue = sudoku_logic.calculate(self.getValues())
+
+    def getValues(self):
+        values = []
+
+        for block in self.puzzleBlocks:
+            numberInputs = block.findChildren(QtGui.QLineEdit)
+            blockValues = []
+
+            for numberInput in numberInputs:
+                blockValues.append(numberInput.text())
+
+            values.append(blockValues)
+
+        return values
+
 
 def main():
 
     app = QtGui.QApplication(sys.argv)
-    sudokuSolver = SudokuSolver()
+    sudokuSolver = MainWindow()
     sys.exit(app.exec_())
 
 
