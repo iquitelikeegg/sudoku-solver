@@ -86,6 +86,8 @@ class Board(QtGui.QFrame):
     width  = 480
     height = 480
 
+    TEST_MODE = True
+
     def __init__(self, parent):
         super(Board, self).__init__(parent)
 
@@ -99,9 +101,9 @@ class Board(QtGui.QFrame):
         self.resize(self.width + 2, self.height + 2)
         self.move(60, 100)
 
-        self.createPuzzleGrid()
+        self.createPuzzleGrid(self.TEST_MODE)
 
-    def createPuzzleGrid(self):
+    def createPuzzleGrid(self, isTestMode):
 
         for i in range(0, 9):
             block = QtGui.QFrame(self)
@@ -122,6 +124,12 @@ class Board(QtGui.QFrame):
                 numberInput.setMaxLength(1)
                 numberInput.setAlignment(QtCore.Qt.AlignHCenter)
                 numberInput.resize(((self.width - 3) / 9), ((self.height - 3) / 9))
+
+                if isTestMode == True and self.getTestPuzzle()[i][j] != 0:
+                    numberInput.setProperty('class', 'puzzle_input puzzle_input_readonly')
+                    numberInput.setText(str(self.getTestPuzzle()[i][j]))
+                    numberInput.setReadOnly(True)
+
                 numberInput.move(
                     (j % 3) * self.width / 9 + 1,
                     math.floor(j / 3) * self.height / 9 + 1
@@ -143,6 +151,19 @@ class Board(QtGui.QFrame):
             values.append(blockValues)
 
         return values
+
+    def getTestPuzzle(self):
+        return [
+            [3,0,8,0,9,0,0,0,0],
+            [7,6,0,3,0,2,0,0,8],
+            [0,0,0,7,6,0,0,0,2],
+            [0,6,0,8,5,7,0,0,0],
+            [4,9,0,0,0,0,0,2,7],
+            [0,0,0,9,2,4,0,3,0],
+            [5,0,0,0,3,4,0,0,0],
+            [9,0,0,2,0,6,0,5,3],
+            [0,0,0,0,8,0,6,0,9]
+        ]
 
 
 def main():

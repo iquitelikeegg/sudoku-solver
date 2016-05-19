@@ -5,7 +5,7 @@ def calculate(values):
         """ Exit! """
         return
 
-    
+
 
 
 def validate(values):
@@ -14,7 +14,6 @@ def validate(values):
     for box in values:
         for valueObj in box:
             print valueObj
-            print "\n"
         print "\n"
 
     return validated

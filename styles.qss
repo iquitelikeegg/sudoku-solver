@@ -34,6 +34,11 @@ QFrame.puzzle_grid {
 QLineEdit.puzzle_input {
     border: 1px solid #eee;
     font-size: 22px;
+    color: #000;
+}
+
+QLineEdit.puzzle_input_readonly {
+    color: #999;
 }
 
 QPushButton#submit_button {
