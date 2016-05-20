@@ -29,17 +29,17 @@ def calculationPass(gridArray):
                 gridRow = int(math.floor(rowNumber / 3))
                 subGridRow = rowNumber if rowNumber < 3 else (rowNumber % 3)
 
-                print gridRow
-                print subGridRow
-
                 for j, possibilityGridBox in enumerate(possibilityGrid):
+                    """ Mark the rows as being invalid locations """
                     if j in [3 * gridRow, 3 * gridRow + 1, 3 * gridRow + 2]:
                         possibilityGridBox[3 * subGridRow] = 0
                         possibilityGridBox[3 * subGridRow + 1] = 0
                         possibilityGridBox[3 * subGridRow + 2] = 0
 
-
-        # Then mark the grid
+                    """ Mark the invalid locations in the grids """
+                    if j == int(3 * gridRow + math.floor(row.index(i) / 3)):
+                        for k in range(0, 9):
+                            possibilityGridBox[k] = 0
 
         print possibilityGrid
 
