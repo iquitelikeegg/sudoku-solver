@@ -98,12 +98,23 @@ def getPossibilityGrid():
 
 def validate(values):
     validated = True
+    #
+    # errors = []
+    #
+    # for gridNumber, grid in enumerate(values):
+    #     gridErrors = {}
+    #     for gridPosition, value in enumerate(grid):
+    #         if value.toInt()[1] is False:
+    #             gridErrors[gridPosition] = ('value must be numeric')
+    #
+    #     errors.append(gridErrors)
+    #
+    # for gridErrors in errors:
+    #     if len(gridErrors) is not 0:
+    #         return errors
 
-    for box in values:
-        for valueObj in box:
-            continue
-            #print valueObj
-        #print "\n"
+    #return []
+
 
     print "validation success"
 
