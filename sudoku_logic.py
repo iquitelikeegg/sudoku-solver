@@ -1,28 +1,29 @@
 """ This is the logic component for the sudoku solver """
 
-import math
+import math, copy
 
 def calculate(values):
     if validate(values) != True:
         """ Exit! """
         return
 
-    gridArray = formatValues(values)
+    puzzle = formatValues(values)
 
     calculationCount = 0
 
-    calculatedArray = calculationPass(gridArray, calculationCount)
+    calculatedArray = calculationPass(puzzle, calculationCount)
 
     print calculatedArray
 
-def calculationPass(gridArray, count):
+def calculationPass(puzzle, count):
     """ Go through the rows and columns """
 
-    rows = getRows(gridArray)
-    columns = getColumns(gridArray)
+    previousPuzzle = copy.deepcopy(puzzle)
+    rows           = getRows(puzzle)
+    columns        = getColumns(puzzle)
 
     for i in range (1, 10):
-        possibilityGrid = getPossibilityGrid(gridArray)
+        probGrid = getProbGrid(puzzle)
 
         # Go through the rows.
         for rowNumber, row in enumerate(rows):
@@ -32,18 +33,18 @@ def calculationPass(gridArray, count):
                 # 0-2 the row of [i] within the grid.
                 subGridRow = rowNumber if rowNumber < 3 else (rowNumber % 3)
 
-                for j, possibilityGridBox in enumerate(possibilityGrid):
+                for j, probGridBox in enumerate(probGrid):
                     # Is the possiblity grid box within the row of grids that [i] appears in?
                     if j in [3 * gridRow, 3 * gridRow + 1, 3 * gridRow + 2]:
                         # Mark the full row as invalid locations.
-                        possibilityGridBox[3 * subGridRow] = 0
-                        possibilityGridBox[3 * subGridRow + 1] = 0
-                        possibilityGridBox[3 * subGridRow + 2] = 0
+                        probGridBox[3 * subGridRow] = 0
+                        probGridBox[3 * subGridRow + 1] = 0
+                        probGridBox[3 * subGridRow + 2] = 0
 
                     # Mark the grids that [i] appears in.
                     if j == int(3 * gridRow + math.floor(row.index(i) / 3)):
                         for k in range(0, 9):
-                            possibilityGridBox[k] = 0
+                            probGridBox[k] = 0
 
         # Go through columns.
         for colNumber, col in enumerate(columns):
@@ -53,84 +54,86 @@ def calculationPass(gridArray, count):
                 # 0-2 The column of [i] within the grid
                 subGridCol = colNumber if colNumber < 3 else (colNumber % 3)
 
-                for l, possibilityGridBox in enumerate(possibilityGrid):
+                for l, probGridBox in enumerate(probGrid):
                     if l in [gridCol, gridCol + 3, 3 * gridCol + 6]:
                         # Mark the full column as invalid locations.
-                        possibilityGridBox[subGridCol] = 0
-                        possibilityGridBox[subGridCol + 3] = 0
-                        possibilityGridBox[subGridCol + 6] = 0
+                        probGridBox[subGridCol] = 0
+                        probGridBox[subGridCol + 3] = 0
+                        probGridBox[subGridCol + 6] = 0
 
-        gridArray = addCalculatedValues(gridArray, possibilityGrid, i)
+        puzzle = addCalculatedValues(puzzle, probGrid, i)
 
-    if checkComplete(gridArray) is False and count < 10:
-        calculationPass(gridArray, count + 1)
+    if checkComplete(puzzle) is False and puzzle != previousPuzzle:
+        return calculationPass(puzzle, count + 1)
+
+    print "completed in %d passes" % (count + 1)
     
-    return gridArray
+    return puzzle
 
 
 
-def addCalculatedValues(gridArray, possibilityGrid, number):
-    for gridNumber, grid in enumerate(possibilityGrid):
+def addCalculatedValues(puzzle, probGrid, number):
+    for index, grid in enumerate(probGrid):
         try:
             if grid.count(1) is 1:
-                gridArray[gridNumber][grid.index(1)] = number
+                puzzle[index][grid.index(1)] = number
         except ValueError:
             continue
 
-    return gridArray
+    return puzzle
 
-def checkComplete(gridArray):
+def checkComplete(puzzle):
 
     isComplete = True
 
-    for grid in gridArray:
+    for grid in puzzle:
         if grid.count(0) >= 1:
             isComplete = False
             break
 
     return isComplete
 
-def getRows(gridArray):
+def getRows(puzzle):
     rows = []
 
     for i in range(0, 3):
         for j in range(0, 3):
             row = []
-            row.append(gridArray[3 * i][3 * j])
-            row.append(gridArray[3 * i][3 * j + 1])
-            row.append(gridArray[3 * i][3 * j + 2])
-            row.append(gridArray[3 * i + 1][3 * j])
-            row.append(gridArray[3 * i + 1][3 * j + 1])
-            row.append(gridArray[3 * i + 1][3 * j + 2])
-            row.append(gridArray[3 * i + 2][3 * j])
-            row.append(gridArray[3 * i + 2][3 * j + 1])
-            row.append(gridArray[3 * i + 2][3 * j + 2])
+            row.append(puzzle[3 * i][3 * j])
+            row.append(puzzle[3 * i][3 * j + 1])
+            row.append(puzzle[3 * i][3 * j + 2])
+            row.append(puzzle[3 * i + 1][3 * j])
+            row.append(puzzle[3 * i + 1][3 * j + 1])
+            row.append(puzzle[3 * i + 1][3 * j + 2])
+            row.append(puzzle[3 * i + 2][3 * j])
+            row.append(puzzle[3 * i + 2][3 * j + 1])
+            row.append(puzzle[3 * i + 2][3 * j + 2])
 
             rows.append(row)
 
     return rows
 
-def getColumns(gridArray):
+def getColumns(puzzle):
     columns = []
 
     for i in range(0, 3):
         for j in range(0, 3):
             column = []
-            column.append(gridArray[i][j])
-            column.append(gridArray[i][j + 3])
-            column.append(gridArray[i][j + 6])
-            column.append(gridArray[i + 3][j])
-            column.append(gridArray[i + 3][j + 3])
-            column.append(gridArray[i + 3][j + 6])
-            column.append(gridArray[i + 6][j])
-            column.append(gridArray[i + 6][j + 3])
-            column.append(gridArray[i + 6][j + 6])
+            column.append(puzzle[i][j])
+            column.append(puzzle[i][j + 3])
+            column.append(puzzle[i][j + 6])
+            column.append(puzzle[i + 3][j])
+            column.append(puzzle[i + 3][j + 3])
+            column.append(puzzle[i + 3][j + 6])
+            column.append(puzzle[i + 6][j])
+            column.append(puzzle[i + 6][j + 3])
+            column.append(puzzle[i + 6][j + 6])
 
             columns.append(column)
 
     return columns
 
-def getPossibilityGrid(gridArray):
+def getProbGrid(puzzle):
     possibilityGrid = [
         [1,1,1,1,1,1,1,1,1],
         [1,1,1,1,1,1,1,1,1],
@@ -144,7 +147,7 @@ def getPossibilityGrid(gridArray):
     ]
 
     # Already occupied locations are not valid locations.
-    for index, grid in enumerate(gridArray):
+    for index, grid in enumerate(puzzle):
         for location, value in enumerate(grid):
             if value is not 0:
                 possibilityGrid[index][location] = 0;
@@ -178,7 +181,7 @@ def validate(values):
 def formatValues(values):
     """format values into an array of integers, input values as immutable"""
 
-    gridValues = []
+    puzzleValues = []
 
     for box in values:
         subValues = []
@@ -187,6 +190,6 @@ def formatValues(values):
 
             subValues.append(int(subValue) if subValue != '' else 0)
 
-        gridValues.append(subValues)
+        puzzleValues.append(subValues)
 
-    return gridValues
+    return puzzleValues
