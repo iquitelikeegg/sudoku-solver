@@ -9,41 +9,86 @@ def calculate(values):
 
     gridArray = formatValues(values)
 
-    calculationPass(gridArray)
+    calculationCount = 0
 
-def calculationPass(gridArray):
+    calculatedArray = calculationPass(gridArray, calculationCount)
+
+    print calculatedArray
+
+def calculationPass(gridArray, count):
     """ Go through the rows and columns """
 
     rows = getRows(gridArray)
     columns = getColumns(gridArray)
 
     for i in range (1, 10):
-        # Go throgh each number in turn
-        print "checking for %d" % i
+        possibilityGrid = getPossibilityGrid(gridArray)
 
-        possibilityGrid = getPossibilityGrid()
-
+        # Go through the rows.
         for rowNumber, row in enumerate(rows):
             if i in row:
-                # First mark the row
+                # 0-2 the row the grid the [i] is in.
                 gridRow = int(math.floor(rowNumber / 3))
+                # 0-2 the row of [i] within the grid.
                 subGridRow = rowNumber if rowNumber < 3 else (rowNumber % 3)
 
                 for j, possibilityGridBox in enumerate(possibilityGrid):
-                    """ Mark the rows as being invalid locations """
+                    # Is the possiblity grid box within the row of grids that [i] appears in?
                     if j in [3 * gridRow, 3 * gridRow + 1, 3 * gridRow + 2]:
+                        # Mark the full row as invalid locations.
                         possibilityGridBox[3 * subGridRow] = 0
                         possibilityGridBox[3 * subGridRow + 1] = 0
                         possibilityGridBox[3 * subGridRow + 2] = 0
 
-                    """ Mark the invalid locations in the grids """
+                    # Mark the grids that [i] appears in.
                     if j == int(3 * gridRow + math.floor(row.index(i) / 3)):
                         for k in range(0, 9):
                             possibilityGridBox[k] = 0
 
-        """ Go through columns """        
+        # Go through columns.
+        for colNumber, col in enumerate(columns):
+            if i in col:
+                # 0-2 The column of the grid that [i] is in
+                gridCol = int(math.floor(colNumber / 3))
+                # 0-2 The column of [i] within the grid
+                subGridCol = colNumber if colNumber < 3 else (colNumber % 3)
 
-        print possibilityGrid
+                for l, possibilityGridBox in enumerate(possibilityGrid):
+                    if l in [gridCol, gridCol + 3, 3 * gridCol + 6]:
+                        # Mark the full column as invalid locations.
+                        possibilityGridBox[subGridCol] = 0
+                        possibilityGridBox[subGridCol + 3] = 0
+                        possibilityGridBox[subGridCol + 6] = 0
+
+        gridArray = addCalculatedValues(gridArray, possibilityGrid, i)
+
+    if checkComplete(gridArray) is False and count < 10:
+        calculationPass(gridArray, count + 1)
+    
+    return gridArray
+
+
+
+def addCalculatedValues(gridArray, possibilityGrid, number):
+    for gridNumber, grid in enumerate(possibilityGrid):
+        try:
+            if grid.count(1) is 1:
+                gridArray[gridNumber][grid.index(1)] = number
+        except ValueError:
+            continue
+
+    return gridArray
+
+def checkComplete(gridArray):
+
+    isComplete = True
+
+    for grid in gridArray:
+        if grid.count(0) >= 1:
+            isComplete = False
+            break
+
+    return isComplete
 
 def getRows(gridArray):
     rows = []
@@ -85,8 +130,8 @@ def getColumns(gridArray):
 
     return columns
 
-def getPossibilityGrid():
-    return [
+def getPossibilityGrid(gridArray):
+    possibilityGrid = [
         [1,1,1,1,1,1,1,1,1],
         [1,1,1,1,1,1,1,1,1],
         [1,1,1,1,1,1,1,1,1],
@@ -97,6 +142,14 @@ def getPossibilityGrid():
         [1,1,1,1,1,1,1,1,1],
         [1,1,1,1,1,1,1,1,1]
     ]
+
+    # Already occupied locations are not valid locations.
+    for index, grid in enumerate(gridArray):
+        for location, value in enumerate(grid):
+            if value is not 0:
+                possibilityGrid[index][location] = 0;
+
+    return possibilityGrid
 
 def validate(values):
     validated = True
@@ -123,7 +176,7 @@ def validate(values):
     return validated
 
 def formatValues(values):
-    """format values into an array of integers"""
+    """format values into an array of integers, input values as immutable"""
 
     gridValues = []
 
