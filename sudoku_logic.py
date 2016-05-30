@@ -41,7 +41,7 @@ def calculationPass(gridArray):
                         for k in range(0, 9):
                             possibilityGridBox[k] = 0
 
-        """ Go through columns """
+        """ Go through columns """        
 
         print possibilityGrid
 
@@ -68,8 +68,8 @@ def getRows(gridArray):
 def getColumns(gridArray):
     columns = []
 
-    for i in range(0, 2):
-        for j in range(0, 2):
+    for i in range(0, 3):
+        for j in range(0, 3):
             column = []
             column.append(gridArray[i][j])
             column.append(gridArray[i][j + 3])
