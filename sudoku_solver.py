@@ -18,7 +18,10 @@ class MainWindow(QtGui.QMainWindow):
         self.resize(800, 750)
         self.move(50, 50)
         self.setWindowTitle('SudokuSolverPy v0.1')
+        self.setWindowState(self.windowState() & ~QtCore.Qt.WindowMinimized | QtCore.Qt.WindowActive)
+        self.raise_()
         self.show()
+        
 
 class Wrapper(QtGui.QFrame):
 
