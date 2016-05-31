@@ -16,8 +16,6 @@ def calculate(values):
     return calculatedArray
 
 def calculationPass(puzzle, count):
-    """ Go through the rows and columns """
-
     previousPuzzle = copy.deepcopy(puzzle)
     rows           = getRows(puzzle)
     columns        = getColumns(puzzle)
@@ -26,6 +24,11 @@ def calculationPass(puzzle, count):
         probGrid = getProbGrid(puzzle)
 
         puzzle = calcRowsAndCols(puzzle, rows, columns)
+
+    if puzzle == previousPuzzle:
+        # calcRowsAndCols is stuck
+        # Try completing rows
+        puzzle = completeRowsAndCols(puzzle, rows, columns)
 
     if checkComplete(puzzle) is False and puzzle != previousPuzzle:
         return calculationPass(puzzle, count + 1)
@@ -79,6 +82,46 @@ def calcRowsAndCols(puzzle, rows, columns):
 
     return puzzle
 
+def completeRowsAndCols(puzzle, rows, columns):
+    for rowNumber, row in enumerate(rows):
+        missing = []
+        emptyLocations = [i for i, value in enumerate(row) if value == 0]
+
+        for n in range(1, 10):
+            try:
+                if row.index(n) != 0:
+                    continue
+            except ValueError:
+                missing.append(n)
+
+        # TODO This seems to break - probably an issue with the handling of potential values...
+        possibleResults = []
+
+        for i in emptyLocations:
+            potentialValues = []
+
+            for m in missing:
+                if not(findInColumns(columns, i, m)):
+                    potentialValues.append(m)
+
+            if len(potentialValues) is 1:
+                puzzle[int(math.floor((math.floor(rowNumber / 3) * 3) + math.floor(i / 3)))] \
+                    [(((rowNumber % 3) * 3) + (i % 3))] = m
+
+    return puzzle;
+
+
+def findInColumns(columns, column, number):
+    try:
+        return bool(columns[column].index(number))
+    except ValueError:
+        return False
+
+def findInRows(rows, row, number):
+    try:
+        return bool(rows[row].index(number))
+    except ValueError:
+        return False
 
 def addCalculatedValues(puzzle, probGrid, number):
     for index, grid in enumerate(probGrid):
