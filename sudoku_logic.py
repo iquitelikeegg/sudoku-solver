@@ -13,7 +13,7 @@ def calculate(values):
 
     calculatedArray = calculationPass(puzzle, calculationCount)
 
-    print calculatedArray
+    return calculatedArray
 
 def calculationPass(puzzle, count):
     """ Go through the rows and columns """
@@ -22,6 +22,20 @@ def calculationPass(puzzle, count):
     rows           = getRows(puzzle)
     columns        = getColumns(puzzle)
 
+    for i in range (1, 10):
+        probGrid = getProbGrid(puzzle)
+
+        puzzle = calcRowsAndCols(puzzle, rows, columns)
+
+    if checkComplete(puzzle) is False and puzzle != previousPuzzle:
+        return calculationPass(puzzle, count + 1)
+
+    print "completed in %d passes" % (count + 1)
+    
+    return puzzle
+
+def calcRowsAndCols(puzzle, rows, columns):
+    # Go through the rows.
     for i in range (1, 10):
         probGrid = getProbGrid(puzzle)
 
@@ -61,15 +75,9 @@ def calculationPass(puzzle, count):
                         probGridBox[subGridCol + 3] = 0
                         probGridBox[subGridCol + 6] = 0
 
-        puzzle = addCalculatedValues(puzzle, probGrid, i)
+        puzzle = addCalculatedValues(puzzle, probGrid, i)    
 
-    if checkComplete(puzzle) is False and puzzle != previousPuzzle:
-        return calculationPass(puzzle, count + 1)
-
-    print "completed in %d passes" % (count + 1)
-    
     return puzzle
-
 
 
 def addCalculatedValues(puzzle, probGrid, number):

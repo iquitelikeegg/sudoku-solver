@@ -104,7 +104,7 @@ class Board(QtGui.QFrame):
         self.resize(self.width + 2, self.height + 2)
         self.move(60, 100)
 
-        self.createPuzzleGrid(self.TEST_MODE)
+        self.puzzle = self.createPuzzleGrid(self.TEST_MODE)
 
     def createPuzzleGrid(self, isTestMode):
 
@@ -140,6 +140,17 @@ class Board(QtGui.QFrame):
 
     def calculate(self):
         calcValue = sudoku_logic.calculate(self.getValues())
+
+        self.setValues(calcValue)
+
+    def setValues(self, newValues):
+        for gridIndex, grid in enumerate(newValues):
+            for gridLocation, value in enumerate(grid):
+                if value is not 0:
+                    self.puzzleBlocks[gridIndex] \
+                        .findChildren(QtGui.QLineEdit)[gridLocation] \
+                        .setText(str(value))
+
 
     def getValues(self):
         values = []
