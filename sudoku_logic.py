@@ -29,11 +29,15 @@ def calculationPass(puzzle, count):
         # calcRowsAndCols is stuck
         # Try completing rows
         puzzle = completeRows(puzzle, rows, columns)
+        puzzle = completeCols(puzzle, rows, columns)
 
-    if checkComplete(puzzle) is False and puzzle != previousPuzzle:
+    if not(checkComplete(puzzle)) and puzzle != previousPuzzle:
         return calculationPass(puzzle, count + 1)
 
-    print "completed in %d passes" % (count + 1)
+    if not(checkComplete(puzzle)):
+        print "failed to complete puzzle after %d passes" % (count + 1)
+    else:
+        print "completed in %d passes" % (count + 1)
     
     return puzzle
 
@@ -83,7 +87,7 @@ def calcRowsAndCols(puzzle, rows, columns):
     return puzzle
 
 def completeRows(puzzle, rows, columns):
-    print "completeRowsAndCols"
+    print "completing rows..."
 
     for rowNumber, row in enumerate(rows):
         missing = []
@@ -91,12 +95,11 @@ def completeRows(puzzle, rows, columns):
 
         for n in range(1, 10):
             try:
-                if row.index(n) != 0:
+                if isinstance(row.index(n), int):
                     continue
             except ValueError:
                 missing.append(n)
 
-        # TODO This seems to break - probably an issue with the handling of potential values...
         possibleResults = []
 
         for i in emptyLocations:
@@ -107,10 +110,39 @@ def completeRows(puzzle, rows, columns):
                     potentialValues.append(m)
 
             if len(potentialValues) is 1:
-                puzzle[int((math.floor(rowNumber / 3) * 3) + (math.floor(i / 3)))] \
+                puzzle[int((math.floor(rowNumber / 3) * 3) + math.floor(i / 3))] \
                     [int(((rowNumber % 3) * 3) + (i % 3))] = potentialValues[0]
 
-    return puzzle;
+    return puzzle
+
+def completeCols(puzzle, rows, columns):
+    print "completing columns..."
+
+    for colNumber, col in enumerate(columns):
+        missing = []
+        emptyLocations = [i for i, value in enumerate(col) if value == 0]
+
+        for n in range(1, 10):
+            try:
+                if isinstance(col.index(n), int):
+                    continue
+            except ValueError:
+                missing.append(n)
+
+        possibleResults = []
+
+        for i in emptyLocations:
+            potentialValues = []
+
+            for m in missing:
+                if not(findInRow(rows, i, m)):
+                    potentialValues.append(m)
+
+            if len(potentialValues) is 1:
+                puzzle[int((math.floor(i / 3) * 3) + math.floor(colNumber / 3))] \
+                    [int(((i % 3) * 3) + (colNumber % 3))] = potentialValues[0]
+
+    return puzzle
 
 
 def findInColumn(columns, columnNumber, value):
