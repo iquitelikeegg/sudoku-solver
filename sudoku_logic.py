@@ -28,7 +28,7 @@ def calculationPass(puzzle, count):
     if puzzle == previousPuzzle:
         # calcRowsAndCols is stuck
         # Try completing rows
-        puzzle = completeRowsAndCols(puzzle, rows, columns)
+        puzzle = completeRows(puzzle, rows, columns)
 
     if checkComplete(puzzle) is False and puzzle != previousPuzzle:
         return calculationPass(puzzle, count + 1)
@@ -82,7 +82,9 @@ def calcRowsAndCols(puzzle, rows, columns):
 
     return puzzle
 
-def completeRowsAndCols(puzzle, rows, columns):
+def completeRows(puzzle, rows, columns):
+    print "completeRowsAndCols"
+
     for rowNumber, row in enumerate(rows):
         missing = []
         emptyLocations = [i for i, value in enumerate(row) if value == 0]
@@ -101,25 +103,25 @@ def completeRowsAndCols(puzzle, rows, columns):
             potentialValues = []
 
             for m in missing:
-                if not(findInColumns(columns, i, m)):
+                if not(findInColumn(columns, i, m)):
                     potentialValues.append(m)
 
             if len(potentialValues) is 1:
-                puzzle[int(math.floor((math.floor(rowNumber / 3) * 3) + math.floor(i / 3)))] \
-                    [(((rowNumber % 3) * 3) + (i % 3))] = m
+                puzzle[int((math.floor(rowNumber / 3) * 3) + (math.floor(i / 3)))] \
+                    [int(((rowNumber % 3) * 3) + (i % 3))] = potentialValues[0]
 
     return puzzle;
 
 
-def findInColumns(columns, column, number):
+def findInColumn(columns, columnNumber, value):
     try:
-        return bool(columns[column].index(number))
+        return isinstance(columns[columnNumber].index(value), int)
     except ValueError:
         return False
 
-def findInRows(rows, row, number):
+def findInRow(rows, rowNumber, value):
     try:
-        return bool(rows[row].index(number))
+        return isinstance(rows[rowNumber].index(value), int)
     except ValueError:
         return False
 
