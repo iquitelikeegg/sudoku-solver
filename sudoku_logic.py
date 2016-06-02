@@ -62,10 +62,13 @@ def calcRowsAndCols(puzzle, rows, columns):
                         probGridBox[3 * subGridRow + 1] = 0
                         probGridBox[3 * subGridRow + 2] = 0
 
-                    # Mark the grids that [i] appears in.
-                    if j == int(3 * gridRow + math.floor(row.index(i) / 3)):
-                        for k in range(0, 9):
-                            probGridBox[k] = 0
+                    try:
+                        # Mark the grids that [i] appears in.
+                        if j == int(3 * gridRow + math.floor(row.index(i) / 3)):
+                            for k in range(0, 9):
+                                probGridBox[k] = 0
+                    except ValueError:
+                        continue
 
         # Go through columns.
         for colNumber, col in enumerate(columns):
@@ -76,11 +79,19 @@ def calcRowsAndCols(puzzle, rows, columns):
                 subGridCol = colNumber if colNumber < 3 else (colNumber % 3)
 
                 for l, probGridBox in enumerate(probGrid):
-                    if l in [gridCol, gridCol + 3, 3 * gridCol + 6]:
+                    if l in [gridCol, gridCol + 3, gridCol + 6]:
                         # Mark the full column as invalid locations.
                         probGridBox[subGridCol] = 0
                         probGridBox[subGridCol + 3] = 0
                         probGridBox[subGridCol + 6] = 0
+
+                    try:
+                        # Mark the grids that [i] appears in.
+                        if l == int(3 * gridRow + math.floor(row.index(i) / 3)):
+                            for m in range(0, 9):
+                                probGridBox[m] = 0
+                    except ValueError:
+                        continue
 
         puzzle = addCalculatedValues(puzzle, probGrid, i)    
 
