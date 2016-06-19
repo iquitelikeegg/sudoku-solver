@@ -117,7 +117,9 @@ def completeRows(puzzle, rows, columns):
             potentialValues = []
 
             for m in missing:
-                if not(findInColumn(columns, i, m)):
+                if not(findInColumn(columns, i, m)) \
+                    and not(findInGrid(puzzle, int((math.floor(rowNumber / 3) * 3) + math.floor(i / 3)), m)) \
+                :
                     potentialValues.append(m)
 
             if len(potentialValues) is 1:
@@ -146,7 +148,9 @@ def completeCols(puzzle, rows, columns):
             potentialValues = []
 
             for m in missing:
-                if not(findInRow(rows, i, m)):
+                if not(findInRow(rows, i, m)) \
+                    and not(findInGrid(puzzle, int((math.floor(i / 3) * 3) + math.floor(colNumber / 3)), m)) \
+                :
                     potentialValues.append(m)
 
             if len(potentialValues) is 1:
@@ -155,6 +159,11 @@ def completeCols(puzzle, rows, columns):
 
     return puzzle
 
+def findInGrid(puzzle, gridNumber, value):
+    try:
+        return isinstance(puzzle[gridNumber].index(value), int)
+    except ValueError:
+        return False
 
 def findInColumn(columns, columnNumber, value):
     try:
