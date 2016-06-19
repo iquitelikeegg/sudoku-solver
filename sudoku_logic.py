@@ -1,8 +1,10 @@
 """ This is the logic component for the sudoku solver """
 
-import math, copy
+import math, copy, time
 
 def calculate(values):
+    start = time.time() * 1000
+
     if validate(values) != True:
         """ Exit! """
         return
@@ -12,6 +14,10 @@ def calculate(values):
     calculationCount = 0
 
     calculatedArray = calculationPass(puzzle, calculationCount)
+
+    end = time.time() * 1000;
+
+    print "calculation in %d ms" % (end - start)
 
     return calculatedArray
 
